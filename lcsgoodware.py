@@ -1,25 +1,15 @@
 # -*- coding: utf-8 -*-
-# changement des librairies python.
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
 import xlrd, os
 import xlsxwriter
 from xlsxwriter.utility import xl_rowcol_to_cell
 from sklearn import preprocessing
-import csv
 from xlwt import Workbook
 from androguard.core.bytecodes.apk import APK
 from tkinter.filedialog import askopenfilename, askdirectory
-import pandas as pd
-from pandas import DataFrame
 
-
-lcsper =['ACCESS_NETWORK_STATE', 'GET_ACCOUNTS', 'INTERNET', 'WAKE_LOCK', 'VIBRATE', 'INSTALL_SHORTCUT', 'RECEIVE', 'WRITE_EXTERNAL_STORAGE', 'C2D_MESSAGE']
-
+perm = list()
 class VectorGroupPermis:
-
     def __init__(self, apk, pos):
         self.data = []
         self.don = []
@@ -29,7 +19,6 @@ class VectorGroupPermis:
         
     # On recupere les permitions des APK
     def getVectorOfXml(self):
-        perm = []
         data_permission = []
         for elt in self.apk.get_permissions():
             permis = elt.split('.')
@@ -41,12 +30,14 @@ class VectorGroupPermis:
 
     # construction de notre lcs pour tous les apks malware
     def lcs(self):  
-        liste = []
-        vector = self.getVectorOfXml()
-        for elt in vector:
+
+        S = self.getVectorOfXml()
+        first_lcs = S[0]
+
+        for liste in S:
             
-            first_lcs = elt
-            second_lcs = lcsper
+            second_lcs = liste
+
             m = len(first_lcs) 
             n = len(second_lcs)
 
@@ -67,29 +58,31 @@ class VectorGroupPermis:
                             lcs_set.append(first_lcs[i-c+1:i+1]) 
                     else:
                         continue
-            
-            liste.append(lcs_set) 
 
-        return liste
+            first_lcs = lcs_set
+        return lcs_set
+
     
     # Creer le fichier excel
     def setVector(self, vector):
-        liste = list()
-        for item in vector:
-            for ite in item:
-                liste.append(ite)
-        for k, elt in enumerate(liste):
-            ligne = feuil.row(self.pos)
-            ligne.write(k, str(elt))
-        ligne.write(k + 1, str(0))    
-        book.save('lcsapkgoodtest0.xls')
+        liste = []
+        for colVal in vector:
+            
+            liste.append(colVal)
 
+        for item in liste:
+            for k, elt in enumerate(item):
+                ligne = feuil.row(self.pos)
+                ligne.write(k, elt)    
+        book.save('lcsgoodware.xls')
+
+    
     def main(self):
         a = self.lcs()
-        print(a)
         self.setVector(a)
-
-
+        print(a)
+        
+        
 if __name__=="__main__":
     directory = askdirectory()
     file = os.listdir(directory)

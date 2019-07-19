@@ -19,7 +19,7 @@ lcsper =['ACCESS_NETWORK_STATE', 'GET_ACCOUNTS', 'INTERNET', 'WAKE_LOCK', 'VIBRA
 class VectorGroupPermis:
 
     def __init__(self, pos):
-        self.document = xlrd.open_workbook("listapktestlcs.xls")
+        self.document = xlrd.open_workbook("apk_test_malware.xls")
         self.feuille = self.document.sheet_by_index(0)
         self.cols = self.feuille.ncols
         self.rows = self.feuille.nrows
@@ -37,6 +37,19 @@ class VectorGroupPermis:
                 self.val += [str(self.feuille.cell_value(rowx=row, colx=col)).upper()]
             self.data.append(self.val)
         return self.data
+
+     # Creer le fichier excel
+    def setVector(self, vector):
+        print(vector)
+        liste = []
+        for colVal in vector:
+            liste.append(colVal)
+
+        for k, elt in enumerate(liste):
+            for elt0 in elt:
+                ligne = feuil.row(self.pos)
+                ligne.write(k, str(elt0))      
+        book.save('DataSetGoodware.xls')
 
     # On verifi si la permission est dangereuse(1) ou non(0)
     def assertPermissionMalisiusOrNot(self, apkPermissions):
@@ -88,8 +101,8 @@ class VectorGroupPermis:
         print(bien,mal)
 
         
-        with pd.ExcelWriter('resultat_apkgoodware.xls') as writer:
-            self.famille_pandas_df.to_excel(writer, sheet_name='resultatgood', startcol=1)
+        with pd.ExcelWriter('resultat_apkgoodwareinverse.xls') as writer:
+            self.famille_pandas_df.to_excel(writer, sheet_name='resultatgoodwareinverse', startcol=1)
             
         return somme
 
