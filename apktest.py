@@ -15,8 +15,12 @@ from tkinter.filedialog import askopenfilename, askdirectory
 import pandas as pd
 from pandas import DataFrame
 
-
-lcsper =['ACCESS_NETWORK_STATE', 'GET_ACCOUNTS', 'INTERNET', 'WAKE_LOCK', 'VIBRATE', 'INSTALL_SHORTCUT', 'RECEIVE', 'WRITE_EXTERNAL_STORAGE', 'C2D_MESSAGE']
+perm = list()
+lcsper =['INTERNET', 'WAKE_LOCK', 'CHANGE_WIFI_STATE', 'ACCESS_WIFI_STATE', 'READ_LOGS',
+        'ACCESS_FINE_LOCATION', 'WRITE_CONTACTS', 'READ_CONTACTS', 'WRITE_SMS', 'CALL_PHONE', 
+        'KILL_BACKGROUND_PROCESSES', 'GET_TASKS', 'RECEIVE_SMS', 'READ_PHONE_STATE', 'READ_HISTORY_BOOKMARKS', 
+        'READ_SMS', 'RECEIVE_BOOT_COMPLETED', 'ACCESS_NETWORK_STATE', 'PROCESS_OUTGOING_CALLS', 'SEND_SMS', 
+        'ACCESS_COARSE_UPDATES', 'RECEIVE_MMS']
 
 class VectorGroupPermis:
 
@@ -82,7 +86,7 @@ class VectorGroupPermis:
             ligne = feuil.row(self.pos)
             ligne.write(k, str(elt))
         ligne.write(k + 1, str(0))    
-        book.save('lcsapkgoodtest0.xls')
+        book.save('lcsapkmaltest0.xls')
 
     def main(self):
         a = self.lcs()
