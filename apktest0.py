@@ -14,16 +14,12 @@ import numpy as np
 
 
 perm = list()
-lcsper =['INTERNET', 'WAKE_LOCK', 'CHANGE_WIFI_STATE', 'ACCESS_WIFI_STATE', 
-        'READ_LOGS', 'ACCESS_FINE_LOCATION', 'WRITE_CONTACTS', 'READ_CONTACTS', 
-        'WRITE_SMS', 'CALL_PHONE', 'KILL_BACKGROUND_PROCESSES', 'GET_TASKS', 'RECEIVE_SMS',
-        'READ_PHONE_STATE', 'READ_HISTORY_BOOKMARKS', 'READ_SMS', 'RECEIVE_BOOT_COMPLETED',	
-        'ACCESS_NETWORK_STATE', 'PROCESS_OUTGOING_CALLS', 'SEND_SMS', 'ACCESS_COARSE_UPDATES', 'RECEIVE_MMS']
+lcsper =['ACCESS_NETWORK_STATE', 'GET_ACCOUNTS', 'INTERNET', 'WAKE_LOCK', 'VIBRATE', 'INSTALL_SHORTCUT', 'RECEIVE', 'WRITE_EXTERNAL_STORAGE', 'C2D_MESSAGE']
 
 class VectorGroupPermis:
 
     def __init__(self, pos):
-        self.document = xlrd.open_workbook("apk.xls")
+        self.document = xlrd.open_workbook("listapktestlcs.xls")
         self.feuille = self.document.sheet_by_index(0)
         self.cols = self.feuille.ncols
         self.rows = self.feuille.nrows
@@ -41,18 +37,6 @@ class VectorGroupPermis:
                 self.val += [str(self.feuille.cell_value(rowx=row, colx=col)).upper()]
             self.data.append(self.val)
         return self.data
-
-    # Creer le fichier excel
-    def setVector(self, vector):
-        liste = []
-        for colVal in vector:
-            
-            liste.append(colVal)
-
-        for k, elt in enumerate(liste):
-            ligne = feuil.row(self.pos)
-            ligne.write(k, str(elt))    
-        book.save('resultatcomp.xls')
 
     # On verifi si la permission est dangereuse(1) ou non(0)
     def assertPermissionMalisiusOrNot(self, apkPermissions):
@@ -81,23 +65,21 @@ class VectorGroupPermis:
         self.famille_pandas_df = pd.DataFrame(d)
         somme1 = self.famille_pandas_df.T
         somme = somme1.sum()
-
         self.famille_pandas_df['somme'] = (somme)
         decision = []
         pourcentage = []
-        total = 22
-        bien = 0
+        total = 9
         mal = 0
-
+        bien = 0
         for item in somme:
             pour = (item/total)*100
             pourcentage.append(pour)
             if item > 0:
                 bien += 1
-                decision.append('malware')
+                decision.append('goodware')
             else:
                 mal += 1
-                decision.append('goodware')
+                decision.append('malware')
         self.famille_pandas_df['decision'] = (decision)
         self.famille_pandas_df['degré en pourcentage (%)'] = (pourcentage)
         decision = np.array(decision)
@@ -106,8 +88,8 @@ class VectorGroupPermis:
         print(bien,mal)
 
         
-        with pd.ExcelWriter('resultat_apkmalware.xls') as writer:
-            self.famille_pandas_df.to_excel(writer, sheet_name='resultatmalware', startcol=1)
+        with pd.ExcelWriter('resultat_apkgoodware.xls') as writer:
+            self.famille_pandas_df.to_excel(writer, sheet_name='resultatgood', startcol=1)
             
         return somme
 
@@ -116,17 +98,19 @@ class VectorGroupPermis:
         d = self.charger_pandas()
         a = self.getVectorOfSheet()
         b = self.assertPermissionMalisiusOrNot(a)
-        print(d)
-        print('***************************************************************')
         print(b)
         print('***************************************************************')
+        print(d)
 
 if __name__=="__main__":
     book = Workbook()
     feuil = book.add_sheet('feuille 1') 
     pos = 0
     for i in range(100):
-        pos += 1
+        try:
+            pos += 1
+        except:
+            continue
     VectorGroupPermis(pos)
     print("Opération terminé avec succès")
 
